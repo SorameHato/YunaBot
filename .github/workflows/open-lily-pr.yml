@@ -1,0 +1,121 @@
+name: Open lily release PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_build:
+        description: "Stable lily build number (e.g. 0 for first release of this version)"
+        required: true
+        type: string
+      version_date:
+        description: "Release date (YYYY-MM-DD)"
+        required: true
+        type: string
+      commit_message:
+        description: "Commit message body (e.g. version 처리 수정)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  SOURCE_BRANCH: candy
+  TARGET_BRANCH: lily
+
+jobs:
+  open-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout candy
+        uses: actions/checkout@v5
+        with:
+          ref: candy
+          fetch-depth: 0
+
+      - name: Prepare lily release branch
+        env:
+          VERSION_BUILD: ${{ inputs.version_build }}
+          VERSION_DATE: ${{ inputs.version_date }}
+          COMMIT_MESSAGE: ${{ inputs.commit_message }}
+        run: |
+          set -euo pipefail
+
+          if [[ ! "${VERSION_BUILD}" =~ ^[0-9]+$ ]]; then
+            echo "version_build must be a non-negative integer (got: ${VERSION_BUILD})"
+            exit 1
+          fi
+
+          if [[ ! "${VERSION_DATE}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            echo "version_date must be YYYY-MM-DD (got: ${VERSION_DATE})"
+            exit 1
+          fi
+
+          if [[ ! -f __version__.py ]]; then
+            echo "__version__.py not found on ${SOURCE_BRANCH}."
+            exit 1
+          fi
+
+          VERSION="$(python3 .github/scripts/read-version-field.py __version__.py)"
+          RELEASE_TAG="v${VERSION}-${TARGET_BRANCH}.${VERSION_BUILD}"
+          RELEASE_BRANCH="release/lily/${RELEASE_TAG}"
+
+          echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
+          echo "RELEASE_TAG=${RELEASE_TAG}" >> "$GITHUB_ENV"
+          echo "RELEASE_BRANCH=${RELEASE_BRANCH}" >> "$GITHUB_ENV"
+
+          COMMIT_MESSAGE="$(echo "${COMMIT_MESSAGE}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+          if [[ -z "${COMMIT_MESSAGE}" ]]; then
+            echo "commit_message cannot be empty."
+            exit 1
+          fi
+          FULL_COMMIT_MESSAGE="[${RELEASE_TAG}] ${COMMIT_MESSAGE}"
+          echo "FULL_COMMIT_MESSAGE=${FULL_COMMIT_MESSAGE}" >> "$GITHUB_ENV"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git checkout -B "${RELEASE_BRANCH}"
+          python3 .github/scripts/patch-public-version.py \
+            "$PWD" \
+            --version "${VERSION}" \
+            --build "${VERSION_BUILD}" \
+            --date "${VERSION_DATE}" \
+            --branch "${TARGET_BRANCH}"
+
+          if git diff --quiet __version__.py; then
+            echo "No version changes to commit."
+            exit 1
+          fi
+
+          git add __version__.py
+          git commit -m "${FULL_COMMIT_MESSAGE}"
+
+      - name: Push release branch
+        run: |
+          git push -u origin "${RELEASE_BRANCH}" --force
+
+      - name: Open pull request to lily
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          if gh pr list --base "${TARGET_BRANCH}" --head "${RELEASE_BRANCH}" --json number --jq 'length' | grep -qv '^0$'; then
+            echo "Pull request already exists for ${RELEASE_BRANCH}."
+            gh pr list --base "${TARGET_BRANCH}" --head "${RELEASE_BRANCH}"
+            exit 0
+          fi
+
+          gh pr create \
+            --base "${TARGET_BRANCH}" \
+            --head "${RELEASE_BRANCH}" \
+            --title "Release ${RELEASE_TAG}" \
+            --body "Promote \`${SOURCE_BRANCH}\` to \`${TARGET_BRANCH}\`.
+
+          Release: \`${RELEASE_TAG}\`
+          Date: \`${{ inputs.version_date }}\`
+          Source: \`${SOURCE_BRANCH}\` at version \`${VERSION}\`
+
+          Merge this PR to publish the stable release. A git tag is created automatically on merge."

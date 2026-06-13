@@ -1,0 +1,33 @@
+name: Tag lily release on merge
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [lily]
+
+permissions:
+  contents: write
+
+jobs:
+  tag-release:
+    if: github.event.pull_request.merged && startsWith(github.event.pull_request.head.ref, 'release/lily/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout lily
+        uses: actions/checkout@v5
+        with:
+          ref: lily
+          fetch-depth: 0
+
+      - name: Create release tag
+        run: |
+          set -euo pipefail
+
+          RELEASE_TAG="$(python3 .github/scripts/read-release-tag.py __version__.py)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git tag -fa "${RELEASE_TAG}" -m "Stable release ${RELEASE_TAG}"
+          git push origin "${RELEASE_TAG}" --force
+
+          echo "Tagged ${RELEASE_TAG} on lily."
