@@ -1,0 +1,6 @@
+version = '7.0.0'
+version_branch = 'candy'
+version_build = '1'
+version_date = '2026-06-14'
+version_str = f'v{version}-{version_branch}.{version_build}'
+version_str_full = version_str + f' ({version_date})'

@@ -3,8 +3,9 @@ import discord, os, pathlib, datetime, platform, signal, atexit
 from discord.ext import tasks as discord_tasks
 import db_tone, db_exp, db_setting
 import lib_slash_guild_sync
+from __version__ import version_str_full
 bot = discord.Bot(intents=discord.Intents.all(), auto_sync_commands=False)
-bot.ame_ver = "7.0.0-ame.0 (2026-04-07)"
+bot.ame_ver = version_str_full
 bot.loaded = False
 bot.dbgChannel = 1504509915123945474
 PID_FILE = pathlib.Path(__file__).with_name('bot.pid')
