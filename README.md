@@ -28,7 +28,7 @@ Hello, I'm Yūna Chikuma. I'm here to support your Discord life. Although I don'
 3. Run `main.py`. Please change `dbgChannel` of `main.py` to ID of your server's log channel.
 
 ### Support
-Developed by Hato Sorame(소라메 하토 · 空目ハト)
+Developed by Hato Sorame(소라메 하토 · 空目ハト)<br>
 Contact : `SorameHato [골뱅이 · at] protonmail [점 · dot] ch` (KOR / ENG / JPY OK)<br>
 日本語を読むことはできますが、日本語で書くのは難しいので、メールの返信は英語やPapagoの力を借りた文章で行うことができますので、ご了承ください。<br>
 I can understand English, but I can't write in English well. So I can borrow power of Papago when writing reply of mail.
