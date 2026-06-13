@@ -1,0 +1,10 @@
+{
+  "type": "mysql",
+  "prefix": "ame",
+  "host": "localhost",
+  "port": 3306,
+  "user": "your_user",
+  "password": "your_password",
+  "database": "sware_bot",
+  "charset": "utf8mb4"
+}

@@ -1,0 +1,9 @@
+{
+  "type": "sqlite3",
+  "prefix": "ame",
+  "locations": {
+    "dailyInform": "dailyInform.db",
+    "exp": "exp.db",
+    "setting": "setting.db"
+  }
+}
