@@ -28,6 +28,15 @@ Hello, I'm Yūna Chikuma. I'm here to support your Discord life. Although I don'
 3. Run `main.py`. Please change `dbgChannel` of `main.py` to ID of your server's log channel.
 
 ### Support
-`SorameHato@protonmail.ch` (KOR / ENG / JPY OK)<br>
+Developed by Hato Sorame(소라메 하토 · 空目ハト)
+Contact : `SorameHato [골뱅이 · at] protonmail [점 · dot] ch` (KOR / ENG / JPY OK)<br>
 日本語を読むことはできますが、日本語で書くのは難しいので、メールの返信は英語やPapagoの力を借りた文章で行うことができますので、ご了承ください。<br>
 I can understand English, but I can't write in English well. So I can borrow power of Papago when writing reply of mail.
+
+### Donation
+If you want to donate, First thank you very much, and please contact me. I don't have donation system/link now.
+
+### Etc.
+이 봇은 제가 2023년에 개발한 SkyFlow님 서버(스카이와 함께하는 즐거운 게임방) 전용 봇인 하늘봇을 기반으로 개발되었습니다.<br>
+This bot is based on HanulBot, which is running on SkyFlow's server, developed by me in 2023.<br>
+유나봇, 치쿠마 유우나라는 이름의 저작권은 SkyWare에 있습니다.<br>YunaBot™, Yūna Chikuma™& ⓒ 2011-2026 SkyWare(Hojin Jeon a.k.a. Hato Sorame), All Rights Reserved. (Only naming / code is AGPLv3 License)
